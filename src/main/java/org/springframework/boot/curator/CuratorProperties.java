@@ -15,9 +15,89 @@
  */
 package org.springframework.boot.curator;
 
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
  * @author vincentruan
  * @version 1.0.0
  */
+@ConfigurationProperties(prefix = "spring.curator")
 public class CuratorProperties {
+
+    /**
+     * list of servers to connect to
+     */
+    private String connectString;
+
+    /**
+     * session timeout
+     */
+    private int sessionTimeOutMs = 60 * 1000;
+
+    /**
+     * connection timeout
+     */
+    private int connectionTimeoutMs = 15 * 1000;
+
+    /**
+     * initial amount of time to wait between retries
+     */
+    private int baseSleepTimeMs = 1 * 1000;
+
+    /**
+     * max number of times to retry
+     */
+    private int maxRetries = 29;
+
+    private RetryPolicy retryPolicy;
+
+    public String getConnectString() {
+        return connectString;
+    }
+
+    public void setConnectString(String connectString) {
+        this.connectString = connectString;
+    }
+
+    public int getSessionTimeOutMs() {
+        return sessionTimeOutMs;
+    }
+
+    public void setSessionTimeOutMs(int sessionTimeOutMs) {
+        this.sessionTimeOutMs = sessionTimeOutMs;
+    }
+
+    public int getConnectionTimeoutMs() {
+        return connectionTimeoutMs;
+    }
+
+    public void setConnectionTimeoutMs(int connectionTimeoutMs) {
+        this.connectionTimeoutMs = connectionTimeoutMs;
+    }
+
+    public int getBaseSleepTimeMs() {
+        return baseSleepTimeMs;
+    }
+
+    public void setBaseSleepTimeMs(int baseSleepTimeMs) {
+        this.baseSleepTimeMs = baseSleepTimeMs;
+    }
+
+    public int getMaxRetries() {
+        return maxRetries;
+    }
+
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
+    }
+
+    public RetryPolicy getRetryPolicy() {
+        return null == retryPolicy ? new ExponentialBackoffRetry(this.baseSleepTimeMs, this.maxRetries) : retryPolicy;
+    }
+
+    public void setRetryPolicy(RetryPolicy retryPolicy) {
+        this.retryPolicy = retryPolicy;
+    }
 }
