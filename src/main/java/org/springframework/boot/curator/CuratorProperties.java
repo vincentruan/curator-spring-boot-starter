@@ -32,14 +32,30 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.curator")
 public class CuratorProperties {
 
+    private String aclProviderClass;
+
+    private String aclProviderParams;
+
+    private String scheme;
+
+    private String authBase64Str;
+
+    private Boolean canBeReadOnly;
+
+    private String compressionProviderClass;
+
+    private String compressionProviderParams;
+
     /**
      * list of servers to connect to
      */
     private String connectString;
 
-    private String aclProviderClass;
+    private Integer connectionTimeout;
 
-    private String aclProviderParams;
+    private String defaultDataBase64Str;
+
+    private String namespace;
 
     /**
      * session timeout
@@ -51,19 +67,15 @@ public class CuratorProperties {
      */
     private int connectionTimeoutMs = 15 * 1000;
 
-    /**
-     * initial amount of time to wait between retries
-     */
-    private int baseSleepTimeMs = 1 * 1000;
-
-    /**
-     * max number of times to retry
-     */
-    private int maxRetries = 29;
-
     private String retryPolicyClass;
 
     private String retryPolicyParams;
 
+    private String threadFactoryClass;
 
+    private String threadFactoryParams;
+
+    private String zookeeperFactoryClass;
+
+    private String zookeeperFactoryParams;
 }

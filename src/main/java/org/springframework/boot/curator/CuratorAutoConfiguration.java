@@ -19,21 +19,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.api.ACLProvider;
+import org.apache.curator.framework.api.CompressionProvider;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.curator.utils.ZookeeperFactory;
+import org.apache.zookeeper.ZooKeeper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.curator.utils.ClassResolveUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author vincentruan
@@ -41,6 +41,7 @@ import java.util.Arrays;
  */
 @Slf4j
 @Configuration
+@ConditionalOnClass({ZooKeeper.class, CuratorFramework.class})
 @EnableConfigurationProperties(CuratorProperties.class)
 public class CuratorAutoConfiguration {
 
@@ -59,80 +60,63 @@ public class CuratorAutoConfiguration {
 
         final CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
 
-        /*if(curatorProperties != null) {
-            builder.aclProvider(aclProvider);
+        if(StringUtils.hasText(curatorProperties.getAclProviderClass())) {
+            builder.aclProvider((ACLProvider) ClassResolveUtils.instantiateClass(curatorProperties.getAclProviderClass(), curatorProperties.getAclProviderParams()));
         }
 
-        if(StringUtils.hasText(scheme)) {
-            builder.authorization(scheme, auth);
+        if(StringUtils.hasText(curatorProperties.getScheme()) && StringUtils.hasText(curatorProperties.getAuthBase64Str())) {
+            builder.authorization(curatorProperties.getScheme(), Base64Utils.decodeFromString(curatorProperties.getAuthBase64Str()));
         }
 
-        if(canBeReadOnly != null) {
-            builder.canBeReadOnly(canBeReadOnly);
+        if(curatorProperties.getCanBeReadOnly() != null) {
+            builder.canBeReadOnly(curatorProperties.getCanBeReadOnly());
         }
 
-        if(compressionProvider != null) {
-            builder.compressionProvider(compressionProvider);
+        if(StringUtils.hasText(curatorProperties.getCompressionProviderClass())) {
+            builder.compressionProvider((CompressionProvider) ClassResolveUtils.instantiateClass(curatorProperties.getCompressionProviderClass(), curatorProperties.getCompressionProviderParams()));
         }
 
-        if(StringUtils.hasText(connectionString)) {
-            builder.connectString(connectionString);
+        if(StringUtils.hasText(curatorProperties.getConnectString())) {
+            builder.connectString(curatorProperties.getConnectString());
         }
 
-        if(connectionTimeout != null) {
-            builder.connectionTimeoutMs(connectionTimeout);
+        if(curatorProperties.getConnectionTimeout() != null) {
+            builder.connectionTimeoutMs(curatorProperties.getConnectionTimeout());
         }
 
-        if(defaultData != null) {
-            builder.defaultData(defaultData);
+        if(curatorProperties.getDefaultDataBase64Str() != null) {
+            builder.defaultData(Base64Utils.decodeFromString(curatorProperties.getDefaultDataBase64Str()));
         }
 
-        if(ensembleProvider != null) {
-            builder.ensembleProvider(ensembleProvider);
+        if(StringUtils.hasText(curatorProperties.getNamespace())) {
+            builder.namespace(curatorProperties.getNamespace());
         }
 
-        if(StringUtils.hasText(namespace)) {
-            builder.namespace(namespace);
-        }
 
         // 重试策略
-        RetryPolicy retryPolicy;
         if(StringUtils.hasText(curatorProperties.getRetryPolicyClass())) {
-            BeanUtils.instantiateClass(curatorProperties.getRetryPolicyClass(), RetryPolicy.class);
-            ReflectionUtils
+            builder.retryPolicy((RetryPolicy) ClassResolveUtils.instantiateClass(curatorProperties.getRetryPolicyClass(), curatorProperties.getRetryPolicyParams()));
         } else {
-
-            retryPolicy = new ExponentialBackoffRetry(1 * 1000, 5);
-
-
+            builder.retryPolicy(new ExponentialBackoffRetry(1 * 1000, 5));
         }
 
-        if(sessionTimeout != null) {
-            builder.sessionTimeoutMs(sessionTimeout);
+        builder.sessionTimeoutMs(curatorProperties.getSessionTimeOutMs());
+        builder.connectionTimeoutMs(curatorProperties.getConnectionTimeoutMs());
+
+        if(StringUtils.hasText(curatorProperties.getThreadFactoryClass())) {
+            builder.threadFactory((ThreadFactory) ClassResolveUtils.instantiateClass(curatorProperties.getThreadFactoryClass(), curatorProperties.getThreadFactoryParams()));
         }
 
-        if(threadFactory != null) {
-            builder.threadFactory(threadFactory);
+        if(StringUtils.hasText(curatorProperties.getZookeeperFactoryClass())) {
+            builder.zookeeperFactory((ZookeeperFactory) ClassResolveUtils.instantiateClass(curatorProperties.getZookeeperFactoryClass(), curatorProperties.getZookeeperFactoryParams()));
         }
 
-        if(zookeeperFactory != null) {
-            builder.zookeeperFactory(zookeeperFactory);
-        }
-
-        client = builder.build();*/
-
-        CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(curatorProperties.getConnectString(),
-                curatorProperties.getSessionTimeOutMs(),
-                curatorProperties.getConnectionTimeoutMs(),
-                new ExponentialBackoffRetry(1 * 1000, 5));
-
-        /*log.info("Start curatorFramework -> {}, sessionTimeOutMs={}, connectionTimeoutMs={}, baseSleepTimeMs={}, maxRetries={}",
+        log.info("Start curatorFramework -> {}, sessionTimeOutMs={}, connectionTimeoutMs={}",
                 curatorProperties.getConnectString(),
                 curatorProperties.getSessionTimeOutMs(),
-                curatorProperties.getConnectionTimeoutMs(),
-                this.baseSleepTimeMs,
-                this.maxRetries);*/
-        return curatorFramework;
+                curatorProperties.getConnectionTimeoutMs());
+
+        return builder.build();
     }
 
 
