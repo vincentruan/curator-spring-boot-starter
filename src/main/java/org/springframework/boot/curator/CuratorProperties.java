@@ -15,7 +15,11 @@
  */
 package org.springframework.boot.curator;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.curator.RetryPolicy;
+import org.apache.curator.ensemble.EnsembleProvider;
+import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -23,6 +27,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author vincentruan
  * @version 1.0.0
  */
+@Getter
+@Setter
 @ConfigurationProperties(prefix = "spring.curator")
 public class CuratorProperties {
 
@@ -30,6 +36,10 @@ public class CuratorProperties {
      * list of servers to connect to
      */
     private String connectString;
+
+    private String aclProviderClass;
+
+    private String aclProviderParams;
 
     /**
      * session timeout
@@ -51,53 +61,9 @@ public class CuratorProperties {
      */
     private int maxRetries = 29;
 
-    private RetryPolicy retryPolicy;
+    private String retryPolicyClass;
 
-    public String getConnectString() {
-        return connectString;
-    }
+    private String retryPolicyParams;
 
-    public void setConnectString(String connectString) {
-        this.connectString = connectString;
-    }
 
-    public int getSessionTimeOutMs() {
-        return sessionTimeOutMs;
-    }
-
-    public void setSessionTimeOutMs(int sessionTimeOutMs) {
-        this.sessionTimeOutMs = sessionTimeOutMs;
-    }
-
-    public int getConnectionTimeoutMs() {
-        return connectionTimeoutMs;
-    }
-
-    public void setConnectionTimeoutMs(int connectionTimeoutMs) {
-        this.connectionTimeoutMs = connectionTimeoutMs;
-    }
-
-    public int getBaseSleepTimeMs() {
-        return baseSleepTimeMs;
-    }
-
-    public void setBaseSleepTimeMs(int baseSleepTimeMs) {
-        this.baseSleepTimeMs = baseSleepTimeMs;
-    }
-
-    public int getMaxRetries() {
-        return maxRetries;
-    }
-
-    public void setMaxRetries(int maxRetries) {
-        this.maxRetries = maxRetries;
-    }
-
-    public RetryPolicy getRetryPolicy() {
-        return null == retryPolicy ? new ExponentialBackoffRetry(this.baseSleepTimeMs, this.maxRetries) : retryPolicy;
-    }
-
-    public void setRetryPolicy(RetryPolicy retryPolicy) {
-        this.retryPolicy = retryPolicy;
-    }
 }
