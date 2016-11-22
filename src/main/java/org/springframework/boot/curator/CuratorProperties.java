@@ -51,8 +51,6 @@ public class CuratorProperties {
      */
     private String connectString;
 
-    private Integer connectionTimeout;
-
     private String defaultDataBase64Str;
 
     private String namespace;

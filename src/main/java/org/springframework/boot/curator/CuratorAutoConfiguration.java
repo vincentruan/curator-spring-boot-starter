@@ -51,7 +51,7 @@ public class CuratorAutoConfiguration {
         this.curatorProperties = curatorProperties;
     }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
+    @Bean(initMethod = "start", destroyMethod = "close")
     @ConditionalOnMissingBean(CuratorFramework.class)
     public CuratorFramework curatorFramework() {
         if(!StringUtils.hasText(curatorProperties.getConnectString())) {
@@ -80,10 +80,6 @@ public class CuratorAutoConfiguration {
             builder.connectString(curatorProperties.getConnectString());
         }
 
-        if(curatorProperties.getConnectionTimeout() != null) {
-            builder.connectionTimeoutMs(curatorProperties.getConnectionTimeout());
-        }
-
         if(curatorProperties.getDefaultDataBase64Str() != null) {
             builder.defaultData(Base64Utils.decodeFromString(curatorProperties.getDefaultDataBase64Str()));
         }
@@ -97,7 +93,7 @@ public class CuratorAutoConfiguration {
         if(StringUtils.hasText(curatorProperties.getRetryPolicyClass())) {
             builder.retryPolicy((RetryPolicy) ClassResolveUtils.instantiateClass(curatorProperties.getRetryPolicyClass(), curatorProperties.getRetryPolicyParams()));
         } else {
-            builder.retryPolicy(new ExponentialBackoffRetry(1 * 1000, 5));
+            builder.retryPolicy(new ExponentialBackoffRetry(1000, 5));
         }
 
         builder.sessionTimeoutMs(curatorProperties.getSessionTimeOutMs());
