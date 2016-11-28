@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.curator.utils.ClassResolveUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
@@ -54,9 +55,7 @@ public class CuratorAutoConfiguration {
     @Bean(initMethod = "start", destroyMethod = "close")
     @ConditionalOnMissingBean(CuratorFramework.class)
     public CuratorFramework curatorFramework() {
-        if(!StringUtils.hasText(curatorProperties.getConnectString())) {
-            throw new IllegalArgumentException("[Assertion failed] 'connection-string' must be configured.");
-        }
+        Assert.hasText(curatorProperties.getConnectString(), "[Assertion failed] 'connection-string' must be configured.");
 
         final CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
 
