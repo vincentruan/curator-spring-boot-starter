@@ -17,6 +17,8 @@ package org.springframework.boot.curator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
+import org.apache.curator.ensemble.EnsembleProvider;
+import org.apache.curator.framework.AuthInfo;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -24,16 +26,20 @@ import org.apache.curator.framework.api.CompressionProvider;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.ZookeeperFactory;
 import org.apache.zookeeper.ZooKeeper;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.curator.utils.ClassResolveUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.Assert;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -44,9 +50,11 @@ import java.util.concurrent.ThreadFactory;
 @Configuration
 @ConditionalOnClass({ZooKeeper.class, CuratorFramework.class})
 @EnableConfigurationProperties(CuratorProperties.class)
-public class CuratorAutoConfiguration {
+public class CuratorAutoConfiguration implements BeanFactoryAware {
 
     private final CuratorProperties curatorProperties;
+
+    private BeanFactory beanFactory;
 
     public CuratorAutoConfiguration(CuratorProperties curatorProperties) {
         this.curatorProperties = curatorProperties;
@@ -54,18 +62,28 @@ public class CuratorAutoConfiguration {
 
     @Bean(initMethod = "start", destroyMethod = "close")
     @ConditionalOnMissingBean(CuratorFramework.class)
-    public CuratorFramework curatorFramework() {
-        Assert.hasText(curatorProperties.getConnectString(), "[Assertion failed] 'connection-string' must be configured.");
+    public CuratorFramework curatorFramework(RetryPolicy retryPolicy) {
 
         final CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
 
-        if(null != curatorProperties.getAclProviderRef()) {
-            builder.aclProvider(curatorProperties.getAclProviderRef());
-        } else if(StringUtils.hasText(curatorProperties.getAclProviderClass())) {
-            builder.aclProvider((ACLProvider) ClassResolveUtils.instantiateClass(curatorProperties.getAclProviderClass(), curatorProperties.getAclProviderParams()));
+        // IMPORTANT: use either connection-string or ensembleProvider but not both.
+        if(StringUtils.hasText(curatorProperties.getConnectString())) {
+            // connection string will be first
+            builder.connectString(curatorProperties.getConnectString());
+        } else if (StringUtils.hasLength(curatorProperties.getEnsembleProviderRef())) {
+            builder.ensembleProvider(beanFactory.getBean(curatorProperties.getEnsembleProviderRef(), EnsembleProvider.class));
+        } else {
+            throw new IllegalArgumentException("[Assertion failed] 'connection-string' must be configured.");
         }
 
-        if(StringUtils.hasText(curatorProperties.getScheme()) && StringUtils.hasText(curatorProperties.getAuthBase64Str())) {
+        if(StringUtils.hasLength(curatorProperties.getAclProviderRef())) {
+            builder.aclProvider(beanFactory.getBean(curatorProperties.getAclProviderRef(), ACLProvider.class));
+        }
+
+        if(StringUtils.hasText(curatorProperties.getAuthInfosRef())) {
+            List<AuthInfo> authInfos = beanFactory.getBean(curatorProperties.getAuthInfosRef(), List.class);
+            builder.authorization(authInfos);
+        } else if(StringUtils.hasText(curatorProperties.getScheme()) && StringUtils.hasText(curatorProperties.getAuthBase64Str())) {
             builder.authorization(curatorProperties.getScheme(), Base64Utils.decodeFromString(curatorProperties.getAuthBase64Str()));
         }
 
@@ -73,14 +91,12 @@ public class CuratorAutoConfiguration {
             builder.canBeReadOnly(curatorProperties.getCanBeReadOnly());
         }
 
-        if(null != curatorProperties.getCompressionProviderRef()) {
-            builder.compressionProvider(curatorProperties.getCompressionProviderRef());
-        } else if(StringUtils.hasText(curatorProperties.getCompressionProviderClass())) {
-            builder.compressionProvider((CompressionProvider) ClassResolveUtils.instantiateClass(curatorProperties.getCompressionProviderClass(), curatorProperties.getCompressionProviderParams()));
+        if(curatorProperties.getUseContainerParentsIfAvailable() != null && !curatorProperties.getUseContainerParentsIfAvailable()) {
+            builder.dontUseContainerParents();
         }
 
-        if(StringUtils.hasText(curatorProperties.getConnectString())) {
-            builder.connectString(curatorProperties.getConnectString());
+        if(StringUtils.hasLength(curatorProperties.getCompressionProviderRef())) {
+            builder.compressionProvider(beanFactory.getBean(curatorProperties.getCompressionProviderRef(), CompressionProvider.class));
         }
 
         if(curatorProperties.getDefaultDataBase64Str() != null) {
@@ -91,25 +107,29 @@ public class CuratorAutoConfiguration {
             builder.namespace(curatorProperties.getNamespace());
         }
 
-
         // 重试策略
-        if(null != curatorProperties.getRetryPolicyRef()) {
-            builder.retryPolicy(curatorProperties.getRetryPolicyRef());
-        } else if(StringUtils.hasText(curatorProperties.getRetryPolicyClass())) {
-            builder.retryPolicy((RetryPolicy) ClassResolveUtils.instantiateClass(curatorProperties.getRetryPolicyClass(), curatorProperties.getRetryPolicyParams()));
-        } else {
-            builder.retryPolicy(new ExponentialBackoffRetry(1000, 5));
+        if(null != retryPolicy) {
+            builder.retryPolicy(retryPolicy);
         }
 
-        builder.sessionTimeoutMs(curatorProperties.getSessionTimeOutMs());
-        builder.connectionTimeoutMs(curatorProperties.getConnectionTimeoutMs());
-
-        if(StringUtils.hasText(curatorProperties.getThreadFactoryClass())) {
-            builder.threadFactory((ThreadFactory) ClassResolveUtils.instantiateClass(curatorProperties.getThreadFactoryClass(), curatorProperties.getThreadFactoryParams()));
+        if(null != curatorProperties.getSessionTimeOutMs()) {
+            builder.sessionTimeoutMs(curatorProperties.getSessionTimeOutMs());
         }
 
-        if(StringUtils.hasText(curatorProperties.getZookeeperFactoryClass())) {
-            builder.zookeeperFactory((ZookeeperFactory) ClassResolveUtils.instantiateClass(curatorProperties.getZookeeperFactoryClass(), curatorProperties.getZookeeperFactoryParams()));
+        if(null != curatorProperties.getConnectionTimeoutMs()) {
+            builder.connectionTimeoutMs(curatorProperties.getConnectionTimeoutMs());
+        }
+
+        if(null != curatorProperties.getMaxCloseWaitMs()) {
+            builder.maxCloseWaitMs(curatorProperties.getMaxCloseWaitMs());
+        }
+
+        if(StringUtils.hasLength(curatorProperties.getThreadFactoryRef())) {
+            builder.threadFactory(beanFactory.getBean(curatorProperties.getThreadFactoryRef(), ThreadFactory.class));
+        }
+
+        if(StringUtils.hasLength(curatorProperties.getZookeeperFactoryRef())) {
+            builder.zookeeperFactory(beanFactory.getBean(curatorProperties.getZookeeperFactoryRef(), ZookeeperFactory.class));
         }
 
         log.info("Start curatorFramework -> {}, sessionTimeOutMs={}, connectionTimeoutMs={}",
@@ -120,8 +140,26 @@ public class CuratorAutoConfiguration {
         return builder.build();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(RetryPolicy.class)
+    public RetryPolicy retryPolicy() {
+        return new ExponentialBackoffRetry(curatorProperties.getBaseSleepTimeMs(), curatorProperties.getMaxRetries());
+    }
 
 
-
-
+    /**
+     * Callback that supplies the owning factory to a bean instance.
+     * <p>Invoked after the population of normal bean properties
+     * but before an initialization callback such as
+     * {@link InitializingBean#afterPropertiesSet()} or a custom init-method.
+     *
+     * @param beanFactory owning BeanFactory (never {@code null}).
+     *                    The bean can immediately call methods on the factory.
+     * @throws BeansException in case of initialization errors
+     * @see BeanInitializationException
+     */
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 }

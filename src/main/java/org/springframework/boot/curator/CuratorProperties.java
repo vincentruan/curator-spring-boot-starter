@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
+import org.apache.curator.framework.AuthInfo;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.api.CompressionProvider;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -33,23 +34,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.curator")
 public class CuratorProperties {
 
-    private ACLProvider aclProviderRef;
-
-    private String aclProviderClass;
-
-    private String aclProviderParams;
+    private String aclProviderRef;
 
     private String scheme;
 
     private String authBase64Str;
 
+    private String authInfosRef;
+
     private Boolean canBeReadOnly;
 
-    private CompressionProvider compressionProviderRef;
+    private Boolean useContainerParentsIfAvailable;
 
-    private String compressionProviderClass;
+    private String compressionProviderRef;
 
-    private String compressionProviderParams;
+    private String ensembleProviderRef;
 
     /**
      * list of servers to connect to
@@ -63,24 +62,26 @@ public class CuratorProperties {
     /**
      * session timeout
      */
-    private int sessionTimeOutMs = 60 * 1000;
+    private Integer sessionTimeOutMs;
 
     /**
      * connection timeout
      */
-    private int connectionTimeoutMs = 15 * 1000;
+    private Integer connectionTimeoutMs;
 
-    private RetryPolicy retryPolicyRef;
+    private Integer maxCloseWaitMs;
 
-    private String retryPolicyClass;
+    private String threadFactoryRef;
 
-    private String retryPolicyParams;
+    private String zookeeperFactoryRef;
 
-    private String threadFactoryClass;
+    /**
+     * initial amount of time to wait between retries
+     */
+    private int baseSleepTimeMs = 1 * 1000;
 
-    private String threadFactoryParams;
-
-    private String zookeeperFactoryClass;
-
-    private String zookeeperFactoryParams;
+    /**
+     * max number of times to retry
+     */
+    private int maxRetries = 5;
 }
