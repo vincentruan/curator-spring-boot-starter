@@ -133,13 +133,13 @@ public class ClassResolveUtils {
             } catch (NoSuchMethodException e) {
                 throw new BeanInstantiationException(clazz, "No such constructor for parameter types [" + classParams + "]?", e);
             } catch (IllegalAccessException e) {
-                throw new BeanInstantiationException(ctor, "Is the constructor accessible?", e);
+                throw new BeanInstantiationException(clazz, "Is the constructor accessible?", e);
             } catch (InstantiationException e) {
-                throw new BeanInstantiationException(ctor, "Is it an abstract class?", e);
+                throw new BeanInstantiationException(clazz, "Is it an abstract class?", e);
             } catch (InvocationTargetException e) {
-                throw new BeanInstantiationException(ctor, "Constructor threw exception", e.getTargetException());
+                throw new BeanInstantiationException(clazz, "Constructor threw exception", e.getTargetException());
             } catch (IllegalArgumentException e) {
-                throw new BeanInstantiationException(ctor, "Illegal arguments for constructor", e);
+                throw new BeanInstantiationException(clazz, "Illegal arguments for constructor", e);
             }
 
         } else {
