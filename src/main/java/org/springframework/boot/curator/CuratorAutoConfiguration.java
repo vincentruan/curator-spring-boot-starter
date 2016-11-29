@@ -59,7 +59,9 @@ public class CuratorAutoConfiguration {
 
         final CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
 
-        if(StringUtils.hasText(curatorProperties.getAclProviderClass())) {
+        if(null != curatorProperties.getAclProviderRef()) {
+            builder.aclProvider(curatorProperties.getAclProviderRef());
+        } else if(StringUtils.hasText(curatorProperties.getAclProviderClass())) {
             builder.aclProvider((ACLProvider) ClassResolveUtils.instantiateClass(curatorProperties.getAclProviderClass(), curatorProperties.getAclProviderParams()));
         }
 
@@ -71,7 +73,9 @@ public class CuratorAutoConfiguration {
             builder.canBeReadOnly(curatorProperties.getCanBeReadOnly());
         }
 
-        if(StringUtils.hasText(curatorProperties.getCompressionProviderClass())) {
+        if(null != curatorProperties.getCompressionProviderRef()) {
+            builder.compressionProvider(curatorProperties.getCompressionProviderRef());
+        } else if(StringUtils.hasText(curatorProperties.getCompressionProviderClass())) {
             builder.compressionProvider((CompressionProvider) ClassResolveUtils.instantiateClass(curatorProperties.getCompressionProviderClass(), curatorProperties.getCompressionProviderParams()));
         }
 

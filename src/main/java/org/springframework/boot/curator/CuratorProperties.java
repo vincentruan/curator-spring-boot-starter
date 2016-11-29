@@ -20,6 +20,7 @@ import lombok.Setter;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
 import org.apache.curator.framework.api.ACLProvider;
+import org.apache.curator.framework.api.CompressionProvider;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -32,6 +33,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.curator")
 public class CuratorProperties {
 
+    private ACLProvider aclProviderRef;
+
     private String aclProviderClass;
 
     private String aclProviderParams;
@@ -41,6 +44,8 @@ public class CuratorProperties {
     private String authBase64Str;
 
     private Boolean canBeReadOnly;
+
+    private CompressionProvider compressionProviderRef;
 
     private String compressionProviderClass;
 
