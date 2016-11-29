@@ -81,7 +81,7 @@ public class CuratorAutoConfiguration implements BeanFactoryAware {
         }
 
         if(StringUtils.hasText(curatorProperties.getAuthInfosRef())) {
-            List<AuthInfo> authInfos = beanFactory.getBean(curatorProperties.getAuthInfosRef(), List.class);
+            List<AuthInfo> authInfos = beanFactory.getBean(curatorProperties.getAuthInfosRef(), List<AuthInfo>.class);
             builder.authorization(authInfos);
         } else if(StringUtils.hasText(curatorProperties.getScheme()) && StringUtils.hasText(curatorProperties.getAuthBase64Str())) {
             builder.authorization(curatorProperties.getScheme(), Base64Utils.decodeFromString(curatorProperties.getAuthBase64Str()));
