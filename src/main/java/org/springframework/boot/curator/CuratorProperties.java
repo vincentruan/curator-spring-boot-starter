@@ -70,6 +70,8 @@ public class CuratorProperties {
      */
     private int connectionTimeoutMs = 15 * 1000;
 
+    private RetryPolicy retryPolicyRef;
+
     private String retryPolicyClass;
 
     private String retryPolicyParams;

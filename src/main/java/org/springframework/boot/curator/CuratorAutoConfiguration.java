@@ -93,7 +93,9 @@ public class CuratorAutoConfiguration {
 
 
         // 重试策略
-        if(StringUtils.hasText(curatorProperties.getRetryPolicyClass())) {
+        if(null != curatorProperties.getRetryPolicyRef()) {
+            builder.retryPolicy(curatorProperties.getRetryPolicyRef());
+        } else if(StringUtils.hasText(curatorProperties.getRetryPolicyClass())) {
             builder.retryPolicy((RetryPolicy) ClassResolveUtils.instantiateClass(curatorProperties.getRetryPolicyClass(), curatorProperties.getRetryPolicyParams()));
         } else {
             builder.retryPolicy(new ExponentialBackoffRetry(1000, 5));
