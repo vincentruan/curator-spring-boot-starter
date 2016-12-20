@@ -103,11 +103,6 @@
             <version>${curator.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>3.0.1</version>
-        </dependency>
     </dependencies>
 
     <dependencyManagement>
