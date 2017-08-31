@@ -1,6 +1,6 @@
 [中文介绍](README.md)
 
-#spring-boot-start-curator
+#spring-boot-start-curator[non-official]
 
 ## How to use
 
