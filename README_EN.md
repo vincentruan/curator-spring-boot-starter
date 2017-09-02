@@ -48,7 +48,7 @@ mvn clean install
 ```
 
 ### 4. Example
-(See [hydra-batch-job](https://github.com/vincentruan/hydra/tree/1.0.0-DEV-snapshot/hydra-batch-job))
+
 
 
 ### 5. Run
