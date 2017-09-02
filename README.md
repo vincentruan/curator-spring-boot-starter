@@ -48,7 +48,7 @@ mvn clean install
 ```
 
 ### 4. Example
-(可以参考样例[hydra-batch-job](https://github.com/vincentruan/hydra/tree/1.0.0-DEV-snapshot/hydra-batch-job))
+
 
 
 ### 5. 打包运行
