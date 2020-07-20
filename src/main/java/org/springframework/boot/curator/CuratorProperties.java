@@ -78,7 +78,7 @@ public class CuratorProperties {
     /**
      * initial amount of time to wait between retries
      */
-    private int baseSleepTimeMs = 1 * 1000;
+    private int baseSleepTimeMs = 1000;
 
     /**
      * max number of times to retry
