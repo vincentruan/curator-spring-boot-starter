@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.curator;
+package org.springhub.boot.curator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
@@ -43,8 +43,10 @@ import java.util.List;
 import java.util.concurrent.ThreadFactory;
 
 /**
+ * auto curator configuration bean
+ * META-INF/spring.factories
  * @author vincentruan
- * @version 1.0.0
+ * @version 1.0.1
  */
 @Slf4j
 @Configuration

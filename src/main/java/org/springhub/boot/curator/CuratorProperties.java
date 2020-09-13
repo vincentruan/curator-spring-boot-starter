@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.curator;
+package org.springhub.boot.curator;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,8 +26,9 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
+ * configuration properties for curator client
  * @author vincentruan
- * @version 1.0.0
+ * @version 1.0.1
  */
 @Getter
 @Setter

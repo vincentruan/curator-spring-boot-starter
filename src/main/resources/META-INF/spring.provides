@@ -1,1 +1,1 @@
-provides: spring-boot-starter-curator
+provides: curator-spring-boot-starter

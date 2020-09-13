@@ -1,19 +1,19 @@
 [中文介绍](README.md)
 
-# spring-boot-start-curator[non-official]
+# curator-spring-boot-starter[non-official]
 
 ## How to use
 
 ### 1. Clone
 
-```
-git clone git@github.com:vincentruan/spring-boot-starter-curator.git
+```shell script
+git clone git@github.com:vincentruan/curator-spring-boot-starter.git
 ```
 
 ### 2. Build and install
 
-```
-cd spring-boot-starter-curator
+```shell script
+cd curator-spring-boot-starter
 mvn clean install
 ```
 
@@ -21,29 +21,29 @@ mvn clean install
 ### 3. Modify maven pom.xml
 
 * add parent reference on pom.xml in your Spring Boot project.[Optional]
-```
+```xml
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.6.RELEASE</version>
+    <version>${spring-boot.version}</version>
 </parent>
  ```
 
 * Add dependency. [Required]
-```
+```xml
  <dependency>
      <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-curator</artifactId>
-     <version>1.5.6.RELEASE</version>
+     <artifactId>curator-spring-boot-starter</artifactId>
+     <version>${spring-boot.version}</version>
  </dependency>
  ```
 
  * Package to a executable jar file by maven plugin, add plugin as below.
-```
+```xml
 <plugin>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-maven-plugin</artifactId>
-    <version>1.5.6.RELEASE</version>
+    <version>${spring-boot.version}</version>
 </plugin>
 ```
 
