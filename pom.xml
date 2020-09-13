@@ -36,17 +36,11 @@
         <spring-boot.version>2.3.3.RELEASE</spring-boot.version>
         <curator.version>[3.0.0,)</curator.version>
         <zk.version>[3.4.14,)</zk.version>
-        <lombok.version>1.18.12</lombok.version>
+        <!-- jetty for embedded-zookeeper, see zookeeper's parent.pom reference version -->
+        <jetty.version>9.4.24.v20191120</jetty.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
@@ -88,11 +82,42 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-x-discovery</artifactId>
+            <version>${curator.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
+            <version>${curator.version}</version>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>${jetty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.jimfs</groupId>
+            <artifactId>jimfs</artifactId>
+            <version>1.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

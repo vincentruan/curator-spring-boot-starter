@@ -15,12 +15,19 @@
  */
 package org.springhub.boot.curator;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 /**
  * @author vincentruan
  * @version 1.0.0
  * @since 2020-09-13
  */
-public class CuratorSpringBootTest {
+@SpringBootApplication
+public class CuratorMockitoDemoApp {
 
+    public static void main(String[] args) {
+        SpringApplication.run(CuratorMockitoDemoApp.class, args);
+    }
 
 }

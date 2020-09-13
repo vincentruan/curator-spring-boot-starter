@@ -15,7 +15,6 @@
  */
 package org.springhub.boot.curator;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.ensemble.EnsembleProvider;
 import org.apache.curator.framework.AuthInfo;
@@ -26,6 +25,8 @@ import org.apache.curator.framework.api.CompressionProvider;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.ZookeeperFactory;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.ThreadFactory;
 
@@ -48,11 +50,12 @@ import java.util.concurrent.ThreadFactory;
  * @author vincentruan
  * @version 1.0.1
  */
-@Slf4j
 @Configuration
 @ConditionalOnClass({ZooKeeper.class, CuratorFramework.class})
 @EnableConfigurationProperties(CuratorProperties.class)
 public class CuratorAutoConfiguration implements BeanFactoryAware {
+
+    private static final Logger log = LoggerFactory.getLogger(CuratorAutoConfiguration.class);
 
     private final CuratorProperties curatorProperties;
 
@@ -134,7 +137,7 @@ public class CuratorAutoConfiguration implements BeanFactoryAware {
             builder.zookeeperFactory(beanFactory.getBean(curatorProperties.getZookeeperFactoryRef(), ZookeeperFactory.class));
         }
 
-        log.info("Start curatorFramework -> {}, sessionTimeOutMs={}, connectionTimeoutMs={}",
+        log.info("Start curatorFramework with -> {}, sessionTimeOutMs={}, connectionTimeoutMs={}",
                 curatorProperties.getConnectString(),
                 curatorProperties.getSessionTimeOutMs(),
                 curatorProperties.getConnectionTimeoutMs());
@@ -148,7 +151,6 @@ public class CuratorAutoConfiguration implements BeanFactoryAware {
         return new ExponentialBackoffRetry(curatorProperties.getBaseSleepTimeMs(), curatorProperties.getMaxRetries());
     }
 
-
     /**
      * Callback that supplies the owning factory to a bean instance.
      * <p>Invoked after the population of normal bean properties
@@ -161,7 +163,7 @@ public class CuratorAutoConfiguration implements BeanFactoryAware {
      * @see BeanInitializationException
      */
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+    public void setBeanFactory(@Nonnull BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
     }
 }

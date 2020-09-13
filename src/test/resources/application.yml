@@ -1,0 +1,13 @@
+spring:
+  main:
+    web-application-type: none
+  application:
+    name: curator_demo
+  curator:
+    connect-string: 127.0.0.1:30155
+    session-time-out-ms: 6000000
+    connection-timeout-ms: 1500000
+    use-container-parents-if-available: false
+zookeeper:
+  admin:
+    serverPort: 28080

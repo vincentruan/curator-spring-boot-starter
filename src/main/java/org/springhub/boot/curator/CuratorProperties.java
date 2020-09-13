@@ -15,14 +15,6 @@
  */
 package org.springhub.boot.curator;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.ensemble.EnsembleProvider;
-import org.apache.curator.framework.AuthInfo;
-import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.api.CompressionProvider;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -30,8 +22,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author vincentruan
  * @version 1.0.1
  */
-@Getter
-@Setter
 @ConfigurationProperties(prefix = "spring.curator")
 public class CuratorProperties {
 
@@ -85,4 +75,148 @@ public class CuratorProperties {
      * max number of times to retry
      */
     private int maxRetries = 5;
+
+    public String getAclProviderRef() {
+        return aclProviderRef;
+    }
+
+    public void setAclProviderRef(String aclProviderRef) {
+        this.aclProviderRef = aclProviderRef;
+    }
+
+    public String getScheme() {
+        return scheme;
+    }
+
+    public void setScheme(String scheme) {
+        this.scheme = scheme;
+    }
+
+    public String getAuthBase64Str() {
+        return authBase64Str;
+    }
+
+    public void setAuthBase64Str(String authBase64Str) {
+        this.authBase64Str = authBase64Str;
+    }
+
+    public String getAuthInfosRef() {
+        return authInfosRef;
+    }
+
+    public void setAuthInfosRef(String authInfosRef) {
+        this.authInfosRef = authInfosRef;
+    }
+
+    public Boolean getCanBeReadOnly() {
+        return canBeReadOnly;
+    }
+
+    public void setCanBeReadOnly(Boolean canBeReadOnly) {
+        this.canBeReadOnly = canBeReadOnly;
+    }
+
+    public Boolean getUseContainerParentsIfAvailable() {
+        return useContainerParentsIfAvailable;
+    }
+
+    public void setUseContainerParentsIfAvailable(Boolean useContainerParentsIfAvailable) {
+        this.useContainerParentsIfAvailable = useContainerParentsIfAvailable;
+    }
+
+    public String getCompressionProviderRef() {
+        return compressionProviderRef;
+    }
+
+    public void setCompressionProviderRef(String compressionProviderRef) {
+        this.compressionProviderRef = compressionProviderRef;
+    }
+
+    public String getEnsembleProviderRef() {
+        return ensembleProviderRef;
+    }
+
+    public void setEnsembleProviderRef(String ensembleProviderRef) {
+        this.ensembleProviderRef = ensembleProviderRef;
+    }
+
+    public String getConnectString() {
+        return connectString;
+    }
+
+    public void setConnectString(String connectString) {
+        this.connectString = connectString;
+    }
+
+    public String getDefaultDataBase64Str() {
+        return defaultDataBase64Str;
+    }
+
+    public void setDefaultDataBase64Str(String defaultDataBase64Str) {
+        this.defaultDataBase64Str = defaultDataBase64Str;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public Integer getSessionTimeOutMs() {
+        return sessionTimeOutMs;
+    }
+
+    public void setSessionTimeOutMs(Integer sessionTimeOutMs) {
+        this.sessionTimeOutMs = sessionTimeOutMs;
+    }
+
+    public Integer getConnectionTimeoutMs() {
+        return connectionTimeoutMs;
+    }
+
+    public void setConnectionTimeoutMs(Integer connectionTimeoutMs) {
+        this.connectionTimeoutMs = connectionTimeoutMs;
+    }
+
+    public Integer getMaxCloseWaitMs() {
+        return maxCloseWaitMs;
+    }
+
+    public void setMaxCloseWaitMs(Integer maxCloseWaitMs) {
+        this.maxCloseWaitMs = maxCloseWaitMs;
+    }
+
+    public String getThreadFactoryRef() {
+        return threadFactoryRef;
+    }
+
+    public void setThreadFactoryRef(String threadFactoryRef) {
+        this.threadFactoryRef = threadFactoryRef;
+    }
+
+    public String getZookeeperFactoryRef() {
+        return zookeeperFactoryRef;
+    }
+
+    public void setZookeeperFactoryRef(String zookeeperFactoryRef) {
+        this.zookeeperFactoryRef = zookeeperFactoryRef;
+    }
+
+    public int getBaseSleepTimeMs() {
+        return baseSleepTimeMs;
+    }
+
+    public void setBaseSleepTimeMs(int baseSleepTimeMs) {
+        this.baseSleepTimeMs = baseSleepTimeMs;
+    }
+
+    public int getMaxRetries() {
+        return maxRetries;
+    }
+
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
+    }
 }
