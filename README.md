@@ -18,7 +18,7 @@ mvn clean install
 ```
 
 
-### 3. 修改maven配置文件(可以参考样例[hydra-batch-job](https://github.com/vincentruan/hydra/tree/1.0.0-DEV-snapshot/hydra-batch-job))
+### 3. 修改maven配置文件(可以参考test代码)
 
 * 在Spring Boot项目的pom.xml增加parent:[非必须]
 ```xml
