@@ -63,12 +63,10 @@ public class DistributedDoubleBarrierExampleTest extends AbstractCuratorMockServ
             service.submit(task);
         }
 
-        Thread.sleep(10000);
+        Thread.sleep(1000);
         System.out.println("all Barrier instances should wait the condition");
 
-
         controlBarrier.removeBarrier();
-
 
         service.shutdown();
         service.awaitTermination(10, TimeUnit.MINUTES);

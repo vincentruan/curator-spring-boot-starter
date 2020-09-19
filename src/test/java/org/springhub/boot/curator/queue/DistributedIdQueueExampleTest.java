@@ -66,10 +66,10 @@ public class DistributedIdQueueExampleTest {
                 queue.remove("Id" + i);
             }
 
-            Thread.sleep(20000);
+            Thread.sleep(200);
 
         } catch (Exception ex) {
-
+            ex.printStackTrace();
         } finally {
             CloseableUtils.closeQuietly(queue);
         }
